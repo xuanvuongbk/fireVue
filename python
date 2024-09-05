@@ -101,8 +101,22 @@ def run(model: str, max_results: int, score_threshold: float,
         if detection_result_list:
             result = detection_result_list[0]  # Get the latest result
             for detection in result.detections:
-                # Check if the detected object is "Fire" and if it's near the center of the frame
+                # Get the bounding box coordinates
                 bbox = detection.bounding_box
+                x_min = int(bbox.origin_x)
+                y_min = int(bbox.origin_y)
+                x_max = int(bbox.origin_x + bbox.width)
+                y_max = int(bbox.origin_y + bbox.height)
+
+                # Draw the bounding box
+                cv2.rectangle(current_frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+
+                # Show the detection confidence score
+                score_text = 'Confidence: {:.2f}'.format(detection.categories[0].score)
+                cv2.putText(current_frame, score_text, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.6, (255, 255, 255), 2)
+
+                # Check if the detected object is "Fire" and if it's near the center of the frame
                 bbox_center_x = (bbox.origin_x + bbox.width / 2) / width
                 bbox_center_y = (bbox.origin_y + bbox.height / 2) / height
 
